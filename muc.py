@@ -105,13 +105,20 @@ class MUCBot(sleekxmpp.ClientXMPP):
             self.send_message(mto=msg['from'].bare,
                               mbody= url_page_title,
                               mtype='groupchat')
+            return
 
           # Commands starting with !
           if re.match("^!links",msg['body']):
             self.send_message(mto=msg['from'],
                               mbody=command_links(),
                               mtype='chat')
+            return
 
+          if re.match("^!link",msg['body']):
+            self.send_message(mto=msg['from'].bare,
+                              mbody=command_link(msg['body']),
+                              mtype='groupchat')
+            return
 """
  Opens the URL and returns the page title from the given url page
  Returns page title
@@ -192,18 +199,36 @@ def save_url(url,url_page_title,message,user):
   db.insert(url,url_page_title,message,user)
 
 """
+ Get specific link
+"""
+def command_link(message):
+  message_without_command = message[5:len(message)]
+
+  uid_list = re.findall('\d+',message_without_command)
+  db = boten_anna_db()
+  message = ""
+
+  for uid in uid_list:
+    # data contains url and page_title and message
+    data = db.search_uid(uid)
+    if data != None:
+      message += "\n" + data[0] + " ("+data[1]+") " + ": " + data[2]
+
+  return message
+
+"""
  Get all links from db
  Returns formatted message
 """
 def command_links():
   db = boten_anna_db()
   links = db.get_links()
-  message = "\n"
+  message = ""
   for link in links:
-    message += "Link:\n"
+    message += "\n"
     for column in link:
       message += str(column) + " - "
-    message = message[:len(message)-3] + '\n'
+    message = message[:len(message)-3]
   return message
 
 if __name__ == '__main__':
