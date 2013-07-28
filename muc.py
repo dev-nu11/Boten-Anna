@@ -145,7 +145,10 @@ def get_url_page_title(chat,user):
     uid = save_url(str(url),str(page_title[0]).rstrip(),str(message),str(user))
     return str(page_title[0]).rstrip() + " (!link "+str(uid)+" )"
   else:
-    return "(" + old_page_title + ") " + user + " du BOB! " + submitted_user + " hat das bereits am: " + time + " mit der Nachricht: " + old_message + " gepostet (!link "+str(uid)+")"
+    output = "(" + old_page_title + ") " + user + " du BOB! " + submitted_user + " hat das bereits am: " + time
+    if len(old_message) > 0:
+      output += " mit der Nachricht: " + old_message
+    return output + " gepostet (!link "+str(uid)+")"
 
 """
 Try to find the right decoding ...
@@ -212,7 +215,10 @@ def command_link(message):
     # data contains url, page_title, message and user
     data = db.search_uid(uid)
     if data != None:
-      message += "\n" + data[0] + " ("+data[1]+")" + ": " + data[2] + " - " + data[3]
+      message += "\n" + data[0] + " ("+data[1]+")"
+      if len(data[2]) > 0:
+        message += ": " + data[2]
+      message += " - " + data[3]
 
   return message
 
