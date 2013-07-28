@@ -115,7 +115,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
 """
  Opens the URL and returns the page title from the given url page
  Returns page title
-""""
+"""
 def get_url_page_title(message,user):
   contains_url, url, message = has_url(message)
 
@@ -125,7 +125,8 @@ def get_url_page_title(message,user):
   try:
     byte_content = urllib.request.urlopen(url)
     content = byte_content.read()
-    url_page_title = re.findall(r'<title>(.*?)</title>',str(content),re.M)
+    content = detect_decoding(content)
+    url_page_title = re.findall(r'<title>(.*?)</title>',content,re.M)
     if len(url_page_title) == 0:
       url_page_title = ['Dieser Link besitzt kein title tag! :)']
   except:
@@ -133,7 +134,23 @@ def get_url_page_title(message,user):
 
   save_url(str(url),str(url_page_title[0]),str(message),str(user))
 
-  return url_page_title
+  return url_page_title[0]
+
+"""
+Try to find the right decoding ...
+"""
+def detect_decoding(content):
+  try:
+    return content.decode("utf-8")
+  except UnicodeDecodeError:
+    pass
+
+  try:
+    return content.decode("ISO-8859-15")
+  except UnicodeDecodeError:
+    pass
+
+  return str(content)
 
 """
  Check if a given message contains an URL (RFC 1808)
@@ -151,9 +168,9 @@ def has_url(message):
 
   return True, message[range_url[0]:range_url[1]], message[0:range_url[0]] + message[range_url[1]+1:len(message)]
 
-""""
+"""
  Save URL in Database
-""""
+"""
 def save_url(url,url_page_title,message,user):
   db = boten_anna_db()
   db.insert(url,url_page_title,message,user)
