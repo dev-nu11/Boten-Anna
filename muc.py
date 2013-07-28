@@ -63,16 +63,16 @@ class MUCBot(sleekxmpp.ClientXMPP):
         self.add_event_handler("groupchat_message", self.muc_message)
 
     """
-    Process the session_start event.
+      Process the session_start event.
 
-    Typical actions for the session_start event are
-    requesting the roster and broadcasting an initial
-    presence stanza.
+      Typical actions for the session_start event are
+      requesting the roster and broadcasting an initial
+      presence stanza.
 
-    Arguments:
-        event -- An empty dictionary. The session_start
-                 event does not provide any additional
-                 data.
+      Arguments:
+          event -- An empty dictionary. The session_start
+                   event does not provide any additional
+                   data.
     """
     def start(self, event):
         self.get_roster()
@@ -89,7 +89,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
      message stanzas may be processed by both handlers, so check
      the 'type' attribute when using a 'message' event handler.
 
-    Arguments:
+     Arguments:
         msg -- The received message stanza. See the documentation
                for stanza objects and the Message stanza to see
                how it may be used.
@@ -108,9 +108,9 @@ class MUCBot(sleekxmpp.ClientXMPP):
 
           # Commands starting with !
           if re.match("^!links",msg['body']):
-            self.send_message(mto=msg['from'].bare,
+            self.send_message(mto=msg['from'],
                               mbody=command_links(),
-                              mtype='groupchat')
+                              mtype='chat')
 
 """
  Opens the URL and returns the page title from the given url page
@@ -132,9 +132,13 @@ def get_url_page_title(message,user):
   except:
     return "Die URL %s ist irgendwie komisch!" % url
 
-  save_url(str(url),str(url_page_title[0]),str(message),str(user))
+  duplicated, uid, page_title, message, submitted_user, time = check_duplicated(str(url))
 
-  return url_page_title[0]
+  if duplicated == False:
+    save_url(str(url),str(url_page_title[0]),str(message),str(user))
+    return url_page_title
+  else:
+    return "(" + page_title + ") " + user + " du BOB! " + submitted_user + " hat das bereits am: " + time + " mit der Nachricht: " + message + " gepostet (!link "+str(uid)+")"
 
 """
 Try to find the right decoding ...
@@ -169,6 +173,18 @@ def has_url(message):
   return True, message[range_url[0]:range_url[1]], message[0:range_url[0]] + message[range_url[1]+1:len(message)]
 
 """
+ Check duplicated URL
+ returns boolean, uid, page title, message, user, time
+"""
+def check_duplicated(url):
+  db = boten_anna_db()
+  data = db.search_duplicated(url)
+  if data != None:
+    return True, data[0], data[1], data[2], data[3], data[4]
+  else:
+    return False, None, None, None, None, None
+
+"""
  Save URL in Database
 """
 def save_url(url,url_page_title,message,user):
@@ -186,7 +202,7 @@ def command_links():
   for link in links:
     message += "Link:\n"
     for column in link:
-      message += column + " - "
+      message += str(column) + " - "
     message = message[:len(message)-3] + '\n'
   return message
 

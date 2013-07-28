@@ -9,12 +9,17 @@ class boten_anna_db:
   def insert(self, links, page_title, message, user):
     c = self.conn.cursor()
     data = (links, page_title, message, user)
-    c.execute('insert into links (link,page_title,message,user) values (?, ?, ?, ?)', data)
+    c.execute('insert into urls (url,page_title,message,user) values (?, ?, ?, ?)', data)
     self.conn.commit()
 
   def get_links(self):
     c = self.conn.cursor()
-    return c.execute('select * from links').fetchall()
+    return c.execute('select * from urls').fetchall()
+
+  def search_duplicated(self,url):
+    print(isinstance(url,str))
+    c = self.conn.cursor()
+    return c.execute('select uid,page_title,message,user,timestamp from urls where url=?', (url,)).fetchone()
 
   # Destructor
   def __del__(self):
