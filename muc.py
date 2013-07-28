@@ -123,8 +123,8 @@ class MUCBot(sleekxmpp.ClientXMPP):
  Opens the URL and returns the page title from the given url page
  Returns page title
 """
-def get_url_page_title(message,user):
-  contains_url, url, message = has_url(message)
+def get_url_page_title(chat,user):
+  contains_url, url, message = has_url(chat)
 
   if contains_url == False:
     return None
@@ -133,19 +133,19 @@ def get_url_page_title(message,user):
     byte_content = urllib.request.urlopen(url)
     content = byte_content.read()
     content = detect_decoding(content)
-    url_page_title = re.findall(r'<title>(.*?)</title>',content,re.M)
-    if len(url_page_title) == 0:
-      url_page_title = ['Dieser Link besitzt kein title tag! :)']
+    page_title = re.findall(r'<title>(.*?)</title>',content,re.DOTALL)
+    if len(page_title) == 0:
+      page_title = ['Dieser Link besitzt kein title tag! :)']
   except:
     return "Die URL %s ist irgendwie komisch!" % url
 
-  duplicated, uid, page_title, message, submitted_user, time = check_duplicated(str(url))
+  duplicated, uid, old_page_title, old_message, submitted_user, time = check_duplicated(str(url))
 
   if duplicated == False:
-    save_url(str(url),str(url_page_title[0]),str(message),str(user))
-    return url_page_title
+    uid = save_url(str(url),str(page_title[0]).rstrip(),str(message),str(user))
+    return str(page_title[0]).rstrip() + " (!link "+str(uid)+" )"
   else:
-    return "(" + page_title + ") " + user + " du BOB! " + submitted_user + " hat das bereits am: " + time + " mit der Nachricht: " + message + " gepostet (!link "+str(uid)+")"
+    return "(" + old_page_title + ") " + user + " du BOB! " + submitted_user + " hat das bereits am: " + time + " mit der Nachricht: " + old_message + " gepostet (!link "+str(uid)+")"
 
 """
 Try to find the right decoding ...
@@ -196,7 +196,7 @@ def check_duplicated(url):
 """
 def save_url(url,url_page_title,message,user):
   db = boten_anna_db()
-  db.insert(url,url_page_title,message,user)
+  return db.insert(url,url_page_title,message,user)
 
 """
  Get specific link
@@ -209,10 +209,10 @@ def command_link(message):
   message = ""
 
   for uid in uid_list:
-    # data contains url and page_title and message
+    # data contains url, page_title, message and user
     data = db.search_uid(uid)
     if data != None:
-      message += "\n" + data[0] + " ("+data[1]+") " + ": " + data[2]
+      message += "\n" + data[0] + " ("+data[1]+")" + ": " + data[2] + " - " + data[3]
 
   return message
 
