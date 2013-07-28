@@ -4,9 +4,15 @@
 """
     SleekXMPP: The Sleek XMPP Library
     Copyright (C) 2010  Nathanael C. Fritz
-    This file is part of SleekXMPP.
+"""
 
-    See the file LICENSE for copying permission.
+"""
+    Boten Anna
+    Boten Anna MUC is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Copyright (C) 2013 H8H https://github.com/h8h
 """
 
 import sys
@@ -16,6 +22,7 @@ from optparse import OptionParser
 
 import sleekxmpp
 
+# Deps for reading the messages and save links into db
 import re
 import urllib.request
 from boten_anna_db import boten_anna_db
@@ -31,13 +38,10 @@ else:
     raw_input = input
 
 
+"""
+Boten Anna - a simple XMPP MUC Bot
+"""
 class MUCBot(sleekxmpp.ClientXMPP):
-
-    """
-    A simple SleekXMPP bot that will greets those
-    who enter the room, and acknowledge any messages
-    that mentions the bot's nickname.
-    """
 
     def __init__(self, jid, password, room, nick):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
@@ -58,28 +62,19 @@ class MUCBot(sleekxmpp.ClientXMPP):
         # will be processed by both handlers.
         self.add_event_handler("groupchat_message", self.muc_message)
 
-        # The groupchat_presence event is triggered whenever a
-        # presence stanza is received from any chat room, including
-        # any presences you send yourself. To limit event handling
-        # to a single room, use the events muc::room@server::presence,
-        # muc::room@server::got_online, or muc::room@server::got_offline.
-        # self.add_event_handler("muc::%s::got_online" % self.room,
-        #                       self.muc_online)
+    """
+    Process the session_start event.
 
+    Typical actions for the session_start event are
+    requesting the roster and broadcasting an initial
+    presence stanza.
 
+    Arguments:
+        event -- An empty dictionary. The session_start
+                 event does not provide any additional
+                 data.
+    """
     def start(self, event):
-        """
-        Process the session_start event.
-
-        Typical actions for the session_start event are
-        requesting the roster and broadcasting an initial
-        presence stanza.
-
-        Arguments:
-            event -- An empty dictionary. The session_start
-                     event does not provide any additional
-                     data.
-        """
         self.get_roster()
         self.send_presence()
         self.plugin['xep_0045'].joinMUC(self.room,
@@ -88,33 +83,23 @@ class MUCBot(sleekxmpp.ClientXMPP):
                                         # password=the_room_password,
                                         wait=True)
 
+    """
+     Process incoming message stanzas from any chat room. Be aware
+     that if you also have any handlers for the 'message' event,
+     message stanzas may be processed by both handlers, so check
+     the 'type' attribute when using a 'message' event handler.
+
+    Arguments:
+        msg -- The received message stanza. See the documentation
+               for stanza objects and the Message stanza to see
+               how it may be used.
+    """
     def muc_message(self, msg):
-        """
-        Process incoming message stanzas from any chat room. Be aware
-        that if you also have any handlers for the 'message' event,
-        message stanzas may be processed by both handlers, so check
-        the 'type' attribute when using a 'message' event handler.
-
-        Whenever the bot's nickname is mentioned, respond to
-        the message.
-
-        IMPORTANT: Always check that a message is not from yourself,
-                   otherwise you will create an infinite loop responding
-                   to your own messages.
-
-        This handler will reply to messages that mention
-        the bot's nickname.
-
-        Arguments:
-            msg -- The received message stanza. See the documentation
-                   for stanza objects and the Message stanza to see
-                   how it may be used.
-        """
         if msg['mucnick'] != self.nick:
 
           # Parse Message
 
-          # Contain Message an URL
+          # Contains Message an URL
           url_page_title = get_url_page_title(msg['body'],msg['mucnick'])
           if url_page_title != None:
             self.send_message(mto=msg['from'].bare,
@@ -127,8 +112,10 @@ class MUCBot(sleekxmpp.ClientXMPP):
                               mbody=command_links(),
                               mtype='groupchat')
 
-# Opens the URL and returns the page title of the given url document
-# returns page title
+"""
+ Opens the URL and returns the page title from the given url page
+ Returns page title
+""""
 def get_url_page_title(message,user):
   contains_url, url, message = has_url(message)
 
@@ -140,7 +127,7 @@ def get_url_page_title(message,user):
     content = byte_content.read()
     url_page_title = re.findall(r'<title>(.*?)</title>',str(content),re.M)
     if len(url_page_title) == 0:
-      url_page_title = ['Diese Webseite besitzt kein title tag! :)']
+      url_page_title = ['Dieser Link besitzt kein title tag! :)']
   except:
     return "Die URL %s ist irgendwie komisch!" % url
 
@@ -148,8 +135,10 @@ def get_url_page_title(message,user):
 
   return url_page_title
 
-# Check if a given message contains an URL (RFC 1808)
-# Returns Boolean, URL, Message
+"""
+ Check if a given message contains an URL (RFC 1808)
+ Returns Boolean, URL, Message
+"""
 def has_url(message):
 
   # Search URL Pattern (RFC 1808)
@@ -162,13 +151,17 @@ def has_url(message):
 
   return True, message[range_url[0]:range_url[1]], message[0:range_url[0]] + message[range_url[1]+1:len(message)]
 
-# Save URL in Database
+""""
+ Save URL in Database
+""""
 def save_url(url,url_page_title,message,user):
   db = boten_anna_db()
   db.insert(url,url_page_title,message,user)
 
-# Get all links in db
-# Returns formatted message
+"""
+ Get all links from db
+ Returns formatted message
+"""
 def command_links():
   db = boten_anna_db()
   links = db.get_links()
