@@ -14,7 +14,7 @@ Features
 Commands
 ---
 * !links - Get all saved links
-* !link <NUMBER> - Show link with number
+* !link `NUMBER` - Show link with number
 
 Install
 ---
