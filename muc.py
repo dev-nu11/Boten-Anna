@@ -119,6 +119,11 @@ class MUCBot(sleekxmpp.ClientXMPP):
                               mbody=command_link(msg['body']),
                               mtype='groupchat')
             return
+          if re.match("^!booah",msg['body']):
+            self.send_message(mto=msg['from'].bare,
+                              mbody="Jan-Keno Janssen regt das auf!",
+                              mtype='groupchat')
+            return
 """
  Opens the URL and returns the page title from the given url page
  Returns page title
