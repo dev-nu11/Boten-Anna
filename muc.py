@@ -119,7 +119,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                               mbody=command_link(msg['body']),
                               mtype='groupchat')
             return
-          if re.match("^!booah",msg['body']):
+          if "boaah" in msg['body'] or "social cp" in msg['body'] or "scp" in msg['body'] or "mist" in msg['body']:
             self.send_message(mto=msg['from'].bare,
                               mbody="Jan-Keno Janssen regt das auf!",
                               mtype='groupchat')
