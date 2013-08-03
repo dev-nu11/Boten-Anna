@@ -3,27 +3,51 @@ import sqlite3
 class boten_anna_db:
 
   # Constructor
-  def __init__(self):
-    self.conn = sqlite3.connect('boten_anna.db')
+  def __init__(self,database,table,columns):
+    self.conn = sqlite3.connect(database,check_same_thread=False)
+    self.__create_table(table,columns)
 
-  def insert(self, links, page_title, message, user):
+  def __create_table(self,table,columns):
+    if table == None or columns == None:
+      return False
     c = self.conn.cursor()
-    data = (links, page_title, message, user)
-    id = c.execute('insert into urls (url,page_title,message,user) values (?, ?, ?, ?)', data)
+    c.execute('CREATE TABLE IF NOT EXISTS ' + table  + '('+ ','.join(columns) + ')')
+    return self.conn.commit()
+   
+  def insert(self,fields,table,data):
+    if fields == None or table == None:
+      return False    
+    c = self.conn.cursor()
+    id = c.execute('insert into '+table+' ('+','.join(fields)+') values '+ self.__generate_values(len(data)), data)
     self.conn.commit()
     return c.lastrowid
 
-  def get_links(self):
+  def select(self,fields,table,fetchall=True):
+    if fields == None or table == None:
+      return False
     c = self.conn.cursor()
-    return c.execute('select * from urls').fetchall()
+    query = c.execute('select '+','.join(fields)+' from '+table)
+    if fetchall:
+      return query.fetchall()
+    else:
+      return query.fetchone()
 
-  def search_uid(self,uid):
+  def search(self,fields,table,search_param, data,fetchall=False):
+    if fields == None or table == None:
+      return False    
     c = self.conn.cursor()
-    return c.execute('select url,page_title,message,user from urls where uid=?', (uid,)).fetchone()
+    query = c.execute('select '+','.join(fields)+' from '+table+' where ' + search_param,data)
+    if fetchall:
+      return query.fetchall()
+    else:
+      return query.fetchone()
 
-  def search_duplicated(self,url):
-    c = self.conn.cursor()
-    return c.execute('select uid,page_title,message,user,timestamp from urls where url=?', (url,)).fetchone()
+  def __generate_values(self,size):
+    values = "("
+    for i in range(0,size-1):
+      values +='?,'
+    values += '?)' 
+    return values
 
   # Destructor
   def __del__(self):

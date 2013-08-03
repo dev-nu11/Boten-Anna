@@ -23,8 +23,8 @@ from optparse import OptionParser
 import sleekxmpp
 
 # Pluginmanager with plugins 
-from pluginmanager.pluginmanager import plugins
-
+from pluginmanager.pluginmanager import features, plugins
+import re
 # Python versions before 3.0 do not use UTF-8 encoding
 # by default. To ensure that Unicode is handled properly
 # throughout SleekXMPP, we will set the default encoding
@@ -49,6 +49,12 @@ class MUCBot(sleekxmpp.ClientXMPP):
 
         for plugin in plugins:
           plugin.plugin_init()
+          print("Plugin registered: %s" % plugin.name)
+
+        for feature in features:
+          feature.plugin_init()
+          print("Features registered: %s" % feature.name)
+
         # The session_start event will be triggered when
         # the bot establishes its connection with the server
         # and the XML streams are ready for use. We want to
@@ -106,11 +112,23 @@ class MUCBot(sleekxmpp.ClientXMPP):
                           mtype='groupchat')
 
     def get_message(self,message,nick,is_private_message):
+      response = ""
+      for feature in features:
+        if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
+           continue
+        match = re.search(feature.match(),message,re.IGNORECASE)
+        if match != None:
+           response += feature.send_message(message,match,nick) + '\n' 
+
       for plugin in plugins:
         if is_private_message != plugin.permissions[0] and not is_private_message != plugin.permissions[1]:
            continue
-        if plugin.match(message) != None:
-           return plugin.send_message(nick) 
+        match = re.search(plugin.match(),message,re.IGNORECASE)
+        if match != None:
+           response += plugin.send_message(message,match,nick) + '\n'
+           return response[:-1] 
+
+      return response[:-1]
 
 if __name__ == '__main__':
     # Setup the command line arguments.

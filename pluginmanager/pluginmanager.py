@@ -1,8 +1,13 @@
 plugins = set() 
+features = set()
 
-def register_plugin(plugin):
-  global plugins
-  plugins.add(plugin) 
+def register_plugin(plugin,is_feature=False):
+  if is_feature:
+    global features
+    features.add(plugin)
+  else:
+    global plugins
+    plugins.add(plugin) 
 
 class plugin(object):
    """Abstract plugin base class."""
@@ -13,10 +18,10 @@ class plugin(object):
    def plugin_init():
        pass
 
-   def match(message):
+   def match():
        pass   
 
-   def send_message(nick):
+   def send_message(message,match,nick):
        pass
 
    def help():
