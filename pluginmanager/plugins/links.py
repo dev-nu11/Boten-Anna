@@ -10,7 +10,7 @@ class Links(plugin):
     DatabaseLayer.init_db()
 
   def match():
-    return '^!links\s?'
+    return '^!links'
 
   def send_message(message,match,nick):
     links = DatabaseLayer.get_links()

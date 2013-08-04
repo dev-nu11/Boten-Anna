@@ -11,7 +11,7 @@ class Link(plugin):
     DatabaseLayer.init_db()
 
   def match():
-    return '^!link\s?' 
+    return '^!link(?!s)' 
 
   def send_message(message,match,nick):
      message_without_command = message[5:len(message)]

@@ -53,7 +53,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
 
         for feature in features:
           feature.plugin_init()
-          print("Features registered: %s" % feature.name)
+          print("Feature registered: %s" % feature.name)
 
         # The session_start event will be triggered when
         # the bot establishes its connection with the server
@@ -116,19 +116,25 @@ class MUCBot(sleekxmpp.ClientXMPP):
       for feature in features:
         if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
            continue
-        match = re.search(feature.match(),message,re.IGNORECASE)
-        if match != None:
-           response += feature.send_message(message,match,nick) + '\n' 
+        try:
+           match = re.search(feature.match(),message,re.IGNORECASE)
+           if match != None:
+              response += feature.send_message(message,match,nick) + '\n'
+        except:
+           print('ERROR in Feature: ' + feature.name + ' '  + str(sys.exc_info()[0]))
 
       for plugin in plugins:
         if is_private_message != plugin.permissions[0] and not is_private_message != plugin.permissions[1]:
            continue
-        match = re.search(plugin.match(),message,re.IGNORECASE)
-        if match != None:
-           response += plugin.send_message(message,match,nick) + '\n'
-           return response[:-1] 
+        try:
+           match = re.search(plugin.match(),message,re.IGNORECASE)
+           if match != None:
+              response += plugin.send_message(message,match,nick) + '\n'
+              return response[:-1] 
+        except:
+           print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
 
-      return response[:-1]
+        return response[:-1]
 
 if __name__ == '__main__':
     # Setup the command line arguments.
