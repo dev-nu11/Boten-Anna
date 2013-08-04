@@ -134,7 +134,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
         except:
            print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
 
-        return response[:-1]
+      return response[:-1]
 
 if __name__ == '__main__':
     # Setup the command line arguments.
