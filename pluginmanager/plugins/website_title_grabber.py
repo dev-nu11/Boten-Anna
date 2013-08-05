@@ -12,7 +12,7 @@ class WebsiteTitleGrabber(plugin):
     DatabaseLayer.init_db()
 
   def match():
-    return 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    return 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 
   def send_message(message,match,nick):
     range_url = match.span()
