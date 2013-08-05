@@ -17,7 +17,7 @@ class JanKenoJannsen(plugin):
     return JanKenoJannsen.words
 
   def send_message(message,match,nick):
-    return "Jan-Keno Janssen regt das auf!"
+    return "Jan-Keno Janssen regt das auf! - http://i.imgur.com/rO22R9u.png"
 
   def help():
     return "Write a Jan-Keno Jannsen word like these" + ",".join(wordlist)
