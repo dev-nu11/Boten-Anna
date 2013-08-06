@@ -23,4 +23,4 @@ class JanKenoJanssen(plugin):
   def help():
     return "Write a Jan-Keno Janssen word like these" + ",".join(wordlist)
 
-register_plugin(JanKenoJanssen,True)
+register_plugin(JanKenoJanssen)
