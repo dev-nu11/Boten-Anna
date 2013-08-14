@@ -68,6 +68,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
         # register a handler for the 'message' event, MUC messages
         # will be processed by both handlers.
         self.add_event_handler("message", self.message)
+
     def start(self, event):
         """
         Process the session_start event.

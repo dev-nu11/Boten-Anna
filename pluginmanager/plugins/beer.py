@@ -11,7 +11,7 @@ class Beer(plugin):
         pass
 
     def match():
-        return '(^|\s+)(be[e]+r|bier)'
+        return '(^|\s+)(b([i]+|e)[e]+r)'
 
     def send_message(message,match,nick):
         return 'Kein Bier vor vier! - http://i.imgur.com/Bg4vMW3.jpg'
