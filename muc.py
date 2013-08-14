@@ -18,13 +18,14 @@
 import sys
 import logging
 import getpass
+import re
 from optparse import OptionParser
 
 import sleekxmpp
 
 # Pluginmanager with plugins 
 from pluginmanager.pluginmanager import features, plugins
-import re
+
 # Python versions before 3.0 do not use UTF-8 encoding
 # by default. To ensure that Unicode is handled properly
 # throughout SleekXMPP, we will set the default encoding
@@ -36,10 +37,10 @@ else:
     raw_input = input
 
 
-"""
-Boten Anna - a simple XMPP MUC Bot
-"""
 class MUCBot(sleekxmpp.ClientXMPP):
+    """
+    Boten Anna - a simple plugin based XMPP MUC Bot using SleekXMPP
+    """
 
     def __init__(self, jid, password, room, nick):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
@@ -48,12 +49,12 @@ class MUCBot(sleekxmpp.ClientXMPP):
         self.nick = nick
 
         for plugin in plugins:
-          plugin.plugin_init()
-          print("Plugin registered: %s" % plugin.name)
+            plugin.plugin_init()
+            print("Plugin registered: %s" % plugin.name)
 
         for feature in features:
-          feature.plugin_init()
-          print("Feature registered: %s" % feature.name)
+            feature.plugin_init()
+            print("Feature registered: %s" % feature.name)
 
         # The session_start event will be triggered when
         # the bot establishes its connection with the server
@@ -67,20 +68,18 @@ class MUCBot(sleekxmpp.ClientXMPP):
         # register a handler for the 'message' event, MUC messages
         # will be processed by both handlers.
         self.add_event_handler("message", self.message)
-
-    """
-      Process the session_start event.
-
-      Typical actions for the session_start event are
-      requesting the roster and broadcasting an initial
-      presence stanza.
-
-      Arguments:
-          event -- An empty dictionary. The session_start
-                   event does not provide any additional
-                   data.
-    """
     def start(self, event):
+        """
+        Process the session_start event.
+
+        Typical actions for the session_start event are
+        requesting the roster and broadcasting an initial
+        presence stanza.
+
+        :params event: An empty dictionary. The session_start
+                 event does not provide any additional
+                 data.
+        """
         self.get_roster()
         self.send_presence()
         self.plugin['xep_0045'].joinMUC(self.room,
@@ -89,52 +88,65 @@ class MUCBot(sleekxmpp.ClientXMPP):
                                         # password=the_room_password,
                                         wait=True)
 
-    """
-     Process incoming message stanzas from any chat room. Be aware
-     that if you also have any handlers for the 'message' event,
-     message stanzas may be processed by both handlers, so check
-     the 'type' attribute when using a 'message' event handler.
-
-     Arguments:
-        msg -- The received message stanza. See the documentation
-               for stanza objects and the Message stanza to see
-               how it may be used.
-    """
     def message(self, msg):
-        
-      if msg['type'] in ('chat', 'normal'):
-        msg.reply(self.get_message(msg['body'],msg['mucnick'],True)).send()
-        return
+        """
+        Process incoming message stanzas from any chat room. Be aware
+        that if you also have any handlers for the 'message' event,
+        message stanzas may be processed by both handlers, so check
+        the 'type' attribute when using a 'message' event handler.
 
-      if msg['mucnick'] != self.nick:
-        self.send_message(mto=msg['from'].bare,
-                          mbody=self.get_message(msg['body'],msg['mucnick'],False), 
-                          mtype='groupchat')
+        :params msg: The received message stanza. See the documentation
+              for stanza objects and the Message stanza to see
+              how it may be used.
+        """
+        # Private chat 
+        if msg['type'] in ('chat', 'normal'):
+            msg.reply(self.get_message(msg['body'],msg['mucnick'],True)).send()
+            return
 
+        # MUC - Multi User Channel
+        if msg['mucnick'] != self.nick:
+            self.send_message(mto=msg['from'].bare,
+                              mbody=self.get_message(msg['body'],msg['mucnick'],False), 
+                              mtype='groupchat')
     def get_message(self,message,nick,is_private_message):
-      response = ""
-      for feature in features:
-        if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
-           continue
-        try:
-           match = re.search(feature.match(),message,re.IGNORECASE)
-           if match != None:
-              response += feature.send_message(message,match,nick) + '\n'
-        except:
-           print('ERROR in Feature: ' + feature.name + ' '  + str(sys.exc_info()[0]))
+        """
+        Receives a message from all features and one from the first matching plugin
+        :param message: Message received from XMPP chat
+        :param nick: Nick which sends the message
+        :param is_private_message: Message received from normal chat or muc? 
 
-      for plugin in plugins:
-        if is_private_message != plugin.permissions[0] and not is_private_message != plugin.permissions[1]:
-           continue
-        try:
-           match = re.search(plugin.match(),message,re.IGNORECASE)
-           if match != None:
-              response += plugin.send_message(message,match,nick) + '\n'
-              return response[:-1] 
-        except:
-           print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
+        :return response: Answers from Boten Anna
+        """
+        # Feature based plugins
+        response = ""
+        for feature in features:
+            if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
+                continue
+            try:
+                # Find matching
+                match = re.search(feature.match(),message,re.IGNORECASE)
+                if match != None:
+                    # Receives message from feature
+                    response += feature.send_message(message,match,nick) + '\n'
+            except:
+                print('ERROR in Feature: ' + feature.name + ' '  + str(sys.exc_info()[0]))
 
-      return response[:-1]
+        # Plugin based plugins
+        for plugin in plugins:
+            if is_private_message != plugin.permissions[0] and not is_private_message != plugin.permissions[1]:
+                continue
+            try:
+                # Find matching
+                match = re.search(plugin.match(),message,re.IGNORECASE)
+                if match != None:
+                    # Receives message from plugin
+                    response += plugin.send_message(message,match,nick) + '\n'
+                    return response[:-1] # without \n
+            except:
+                print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
+
+        return response[:-1] # without \n
 
 if __name__ == '__main__':
     # Setup the command line arguments.

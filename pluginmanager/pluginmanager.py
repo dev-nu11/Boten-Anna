@@ -2,27 +2,35 @@ plugins = set()
 features = set()
 
 def register_plugin(plugin,is_feature=False):
-  if is_feature:
-    global features
-    features.add(plugin)
-  else:
-    global plugins
-    plugins.add(plugin) 
+    """
+    Registers a new plugin oder feature
+    :param plugin plugin: plugin class to register / store
+    :param bool is_feature: plugin or feature based?
+    """
+    if is_feature:
+        global features
+        features.add(plugin)
+    else:
+        global plugins
+        plugins.add(plugin) 
 
 class plugin(object):
-   """Abstract plugin base class."""
+    """
+    Abstract plugin base class.
+    """
+    name = 'Plugin name'
 
-   name = 'Plugin name'
-   permissions = [True,True] # 0: Match on Private Messages | 1: Match on Group Chat   
+    # 0: Match on private messages | 1: Match on groupchat
+    permissions = [True,True]  
 
-   def plugin_init():
-       pass
+    def plugin_init():
+        pass
 
-   def match():
-       pass   
+    def match():
+        pass   
 
-   def send_message(message,match,nick):
-       pass
+    def send_message(message,match,nick):
+        pass
 
-   def help():
-       pass
+    def help():
+        pass
