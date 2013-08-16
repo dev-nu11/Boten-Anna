@@ -33,4 +33,4 @@ class plugin(object):
         pass
 
     def help():
-        pass
+        return "No help ..." 

@@ -16,7 +16,4 @@ class Beer(plugin):
     def send_message(message,match,nick):
         return 'Kein Bier vor vier! - http://i.imgur.com/Bg4vMW3.jpg'
 
-    def help():
-        pass
-
 register_plugin(Beer)

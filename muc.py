@@ -110,6 +110,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
             self.send_message(mto=msg['from'].bare,
                               mbody=self.get_message(msg['body'],msg['mucnick'],False), 
                               mtype='groupchat')
+
     def get_message(self,message,nick,is_private_message):
         """
         Receives a message from all features and one from the first matching plugin
@@ -119,8 +120,13 @@ class MUCBot(sleekxmpp.ClientXMPP):
 
         :return response: Answers from Boten Anna
         """
-        # Feature based plugins
+        # Help Command
+        if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
+            msg = message.split(' ',1)
+            return pluginhelp(msg[1])
+
         response = ""
+        # Feature based plugins
         for feature in features:
             if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
                 continue
@@ -131,7 +137,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                     # Receives message from feature
                     response += feature.send_message(message,match,nick) + '\n'
             except:
-                print('ERROR in Feature: ' + feature.name + ' '  + str(sys.exc_info()[0]))
+                print('ERROR in Feature %s - %s' % feature.name,str(sys.exc_info()[0]))
 
         # Plugin based plugins
         for plugin in plugins:
@@ -145,9 +151,22 @@ class MUCBot(sleekxmpp.ClientXMPP):
                     response += plugin.send_message(message,match,nick) + '\n'
                     return response[:-1] # without \n
             except:
-                print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
+                print('ERROR in Plugin %s - %s' % plugin.name,str(sys.exc_info()[0]))
 
         return response[:-1] # without \n
+
+    def pluginhelp(message):
+        for allPlugins in plugins, features:
+            for plugin in allPlugins:
+                try:
+                    if re.search('^%s$' % plugin.name,message,re.IGNORECASE) != None:
+                        return plugin.help()
+                    if re.search(plugin.match(),message,re.IGNORECASE) != None:
+                        return plugin.help()
+                except:
+                    return 'Plugin error, something went wrong :('
+
+        return 'No Plugin found ...'
 
 if __name__ == '__main__':
     # Setup the command line arguments.

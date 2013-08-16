@@ -21,6 +21,7 @@ class WebsiteTitleGrabber(plugin):
         message_without_url = message[0:range_url[0]] + message[range_url[1]+1:len(message)]
         url = str(message[range_url[0]:range_url[1]])
         return WebsiteTitleGrabber.get_url_page_title(message_without_url,url,nick)
+
     def get_url_page_title(message,url,nick):
 
         '''  
@@ -78,6 +79,7 @@ class WebsiteTitleGrabber(plugin):
             return True, data[0], data[1], data[2], data[3], data[4]
         else:
             return False, None, None, None, None, None
+
     def save_url(url,url_page_title,message,user):
         """
         Save URL in Database
@@ -85,7 +87,7 @@ class WebsiteTitleGrabber(plugin):
         return DatabaseLayer.insert(url,url_page_title,message,user)
 
     def help():
-        pass
+        return 'Store links in database, pattern: http://www.url.tld/something/somepage.html#anchor or http://127.0.0.1/s/sp.html#anchor' 
 
 register_plugin(WebsiteTitleGrabber,True)
 

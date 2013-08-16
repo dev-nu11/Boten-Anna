@@ -7,14 +7,12 @@ class JanKenoJanssen(plugin):
     # 0: Match on Private Message | 1: Match on Group Chat
     permissions = [True,True]
   
-    words = "" 
-
     def plugin_init():
-        wordlist = set() 
+        JanKenoJanssen.wordlist = set() 
         for line in open('pluginmanager/plugins/jan-keno_janssen.txt', 'r'):
-            wordlist.add(' '.join(line.split()))
+            JanKenoJanssen.wordlist.add(' '.join(line.split()))
         JanKenoJanssen.words = '(^|\s+)('
-        JanKenoJanssen.words += "|".join(wordlist)
+        JanKenoJanssen.words += "|".join(JanKenoJanssen.wordlist)
         JanKenoJanssen.words += ')'
     def match():
         return JanKenoJanssen.words
@@ -23,6 +21,6 @@ class JanKenoJanssen(plugin):
         return "Jan-Keno Janssen regt das auf! - http://i.imgur.com/rO22R9u.png"
 
     def help():
-        return "Write a Jan-Keno Janssen word like these" + ",".join(wordlist)
+        return "Write a Jan-Keno Janssen word like these " + ", ".join(JanKenoJanssen.wordlist)
 
 register_plugin(JanKenoJanssen)

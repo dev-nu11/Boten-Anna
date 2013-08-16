@@ -21,6 +21,10 @@ def get_message(message,nick,is_private_message):
     :return response: Answers from Boten Anna
     """
     # Feature based plugins
+    if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
+        msg = message.split(' ',1)
+        return pluginhelp(msg[1])
+
     response = ""
     for feature in features:
         if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
@@ -46,10 +50,23 @@ def get_message(message,nick,is_private_message):
                 response += plugin.send_message(message,match,nick) + '\n'
                 return response[:-1] # without \n
         except:
-            print('ERROR in Plugin: ' + plugin.name + ' ' + str(sys.exc_info()[0]))
+            print('ERROR in Plugin: %s - %s ' % plugin.name, str(sys.exc_info()[0]))
 
     return response[:-1] # without \n
- 
+
+def pluginhelp(message):
+    for allPlugins in plugins, features:
+        for plugin in allPlugins:
+            try:
+                if re.search('^%s$' % plugin.name,message,re.IGNORECASE) != None:
+                    return plugin.help()
+                if re.search(plugin.match(),message,re.IGNORECASE) != None:
+                    return plugin.help()
+            except:
+                return 'Plugin error, something went wrong :('
+
+    return 'No Plugin found ...'  
+
 print("===== Plugin Tester ======")
 init_plugins()
 print("==========================")
@@ -75,4 +92,4 @@ while(1):
         print('Bye ...')
         break 
 
-    print("Boten Anna: " + get_message(message,'TestUser',is_private_message))
+    print("Boten Anna: %s" % get_message(message,'TestUser',is_private_message))

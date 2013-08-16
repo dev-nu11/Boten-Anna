@@ -32,7 +32,7 @@ class Link(plugin):
         return response 
 
     def help():
-        pass
+        return '!link <link-numbers>, see !links'
 
 register_plugin(Link)
 

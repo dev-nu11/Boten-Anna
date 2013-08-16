@@ -3,7 +3,7 @@ from databasemanager.boten_anna_db import boten_anna_db
 
 class Links(plugin):
    
-    name = 'Get Links'
+    name = 'Links'
 
     # 0: Match on Private Messages | 1: Match on Group Chat
     permissions = [True,False]
@@ -25,7 +25,7 @@ class Links(plugin):
         return response 
 
     def help():
-        pass
+        return '!links - Show all stored links with message, time and nick' 
 
 register_plugin(Links)
 

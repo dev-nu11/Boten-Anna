@@ -16,7 +16,4 @@ class Next(plugin):
   def send_message(message,match,nick):
     return 'Another satisfied customer! NEXT!'
 
-  def help():
-    pass
-
 register_plugin(Next)
