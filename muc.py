@@ -155,7 +155,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
 
         return response[:-1] # without \n
 
-    def pluginhelp(message):
+    def pluginhelp(self,message):
         for allPlugins in plugins, features:
             for plugin in allPlugins:
                 try:
