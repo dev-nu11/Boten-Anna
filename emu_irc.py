@@ -23,6 +23,9 @@ def get_message(message,nick,is_private_message):
     # Feature based plugins
     if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
         msg = message.split(' ',1)
+        if len(msg) < 2 or re.search('^help$',msg[1],re.IGNORECASE) !=None:
+            return '!help <plugin>'
+
         return pluginhelp(msg[1])
 
     response = ""

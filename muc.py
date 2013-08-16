@@ -123,6 +123,9 @@ class MUCBot(sleekxmpp.ClientXMPP):
         # Help Command
         if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
             msg = message.split(' ',1)
+            if len(msg) < 2 or re.search('^help$',msg[1],re.IGNORECASE) !=None:
+                return '!help <plugin>'
+
             return self.pluginhelp(msg[1])
 
         response = ""
