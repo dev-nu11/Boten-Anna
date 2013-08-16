@@ -140,7 +140,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                     # Receives message from feature
                     response += feature.send_message(message,match,nick) + '\n'
             except:
-                print('ERROR in Feature %s - %s' % feature.name,str(sys.exc_info()[0]))
+                print('ERROR in Feature %s - %s' % (feature.name,str(sys.exc_info()[0])))
 
         # Plugin based plugins
         for plugin in plugins:
@@ -154,7 +154,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                     response += plugin.send_message(message,match,nick) + '\n'
                     return response[:-1] # without \n
             except:
-                print('ERROR in Plugin %s - %s' % plugin.name,str(sys.exc_info()[0]))
+                print('ERROR in Plugin %s - %s' % (plugin.name,str(sys.exc_info()[0])))
 
         return response[:-1] # without \n
 

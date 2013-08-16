@@ -20,7 +20,6 @@ def get_message(message,nick,is_private_message):
 
     :return response: Answers from Boten Anna
     """
-    # Feature based plugins
     if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
         msg = message.split(' ',1)
         if len(msg) < 2 or re.search('^help$',msg[1],re.IGNORECASE) !=None:
@@ -29,32 +28,26 @@ def get_message(message,nick,is_private_message):
         return pluginhelp(msg[1])
 
     response = ""
+    # Feature based plugins
     for feature in features:
         if is_private_message != feature.permissions[0] and not is_private_message != feature.permissions[1]:
             continue
-        try:
-            # Find matching
-            match = re.search(feature.match(),message,re.IGNORECASE)
-            if match != None:
-                # Receives message from feature
-                response += feature.send_message(message,match,nick) + '\n'
-        except:
-            print('ERROR in Feature: ' + feature.name + ' '  + str(sys.exc_info()[0]))
+        # Find matching
+        match = re.search(feature.match(),message,re.IGNORECASE)
+        if match != None:
+            # Receives message from feature
+            response += feature.send_message(message,match,nick) + '\n'
 
     # Plugin based plugins
     for plugin in plugins:
         if is_private_message != plugin.permissions[0] and not is_private_message != plugin.permissions[1]:
             continue
-        try:
-            # Find matching
-            match = re.search(plugin.match(),message,re.IGNORECASE)
-            if match != None:
-                # Receives message from plugin
-                response += plugin.send_message(message,match,nick) + '\n'
-                return response[:-1] # without \n
-        except:
-            print('ERROR in Plugin: %s - %s ' % plugin.name, str(sys.exc_info()[0]))
-
+        # Find matching
+        match = re.search(plugin.match(),message,re.IGNORECASE)
+        if match != None:
+            # Receives message from plugin
+            response += plugin.send_message(message,match,nick) + '\n'
+            return response[:-1] # without \n
     return response[:-1] # without \n
 
 def pluginhelp(message):

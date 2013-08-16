@@ -15,7 +15,19 @@ class Links(plugin):
         return '^!links'
 
     def send_message(message,match,nick):
-        links = DatabaseLayer.get_links()
+        msg = message.split(' ',1)
+        if len(msg) > 1:
+            msg = msg[1].split(' ')
+            if msg[0].isdecimal():
+              if len(msg) > 1 and msg[1].isdecimal():
+                links = DatabaseLayer.get_links_in_range(msg[0],msg[1])
+              else:
+                links = DatabaseLayer.get_links_in_range(0,msg[0])
+            else:
+              links = DatabaseLayer.get_links_by_nick(msg)
+        else:
+            links = DatabaseLayer.get_links()
+
         response  = ""
         for link in links:
             response += "\n"
@@ -44,3 +56,20 @@ class DatabaseLayer:
 
     def get_links():
         return DatabaseLayer.db.select(['*'],'url')
+    
+    def get_links_by_nick(nick):
+        placeholders = DatabaseLayer.__generate_values(len(nick))
+        return DatabaseLayer.db.search(['*'], 'url',placeholders,nick,True)
+
+    def get_links_in_range(begin,end):
+        return DatabaseLayer.db.search(['*'],'url','uid between ? and ?',[begin,end],True)
+
+    """ 
+    Help function to generate search values placeholder for given fields user=? or user=? 
+    :param int size: How many placeholders should I create, sir?
+    """
+    def __generate_values(size):
+        values=""
+        for i in range(0,size):
+            values +='user=? or '
+        return values[:-4] #without or
