@@ -123,7 +123,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
         # Help Command
         if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
             msg = message.split(' ',1)
-            return pluginhelp(msg[1])
+            return self.pluginhelp(msg[1])
 
         response = ""
         # Feature based plugins
