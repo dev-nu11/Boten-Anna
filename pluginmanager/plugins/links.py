@@ -17,12 +17,12 @@ class Links(plugin):
     def send_message(message,match,nick):
         msg = message.split(' ',1)
         
-        # Contains message a command like <nicks> or <link number(s)> ?
+        # Does message contain a command like <nicks> or <link number(s)> ?
         if len(msg) > 1:
             msg = msg[1].split(' ')
             # Nick or link-number?
             if msg[0].isdecimal():
-                # Contains message a command with range like !links <begin> <end>?
+                # Does message contain a command with range like !links <begin> <end>?
                 if len(msg) > 1 and msg[1].isdecimal():
                     links = DatabaseLayer.get_links_in_range(msg[0],msg[1])
               # Command without Range? !links <end>
@@ -79,4 +79,4 @@ class DatabaseLayer:
         values=""
         for i in range(0,size):
             values +='user=? or '
-        return values[:-4] #without or
+        return values[:-4] # without or
