@@ -10,7 +10,8 @@ class JanKenoJanssen(plugin):
     def plugin_init():
         JanKenoJanssen.wordlist = set() 
         for line in open('pluginmanager/plugins/jan-keno_janssen.txt', 'r'):
-            JanKenoJanssen.wordlist.add(' '.join(line.split()))
+            JanKenoJanssen.wordlist.add(''.join(line.split()))
+        filter("", JanKenoJanssen.wordlist)
         JanKenoJanssen.words = '(^|\s+)('
         JanKenoJanssen.words += "|".join(JanKenoJanssen.wordlist)
         JanKenoJanssen.words += ')'
