@@ -15,7 +15,7 @@ Features
 Plugin System
 ---
 #### Differences between Plug-in and Features:  
-* Features: All come - all serve (example: bad word matching, url matching, ...)  
+* Features: All come - all serve (example: url matching, funny words responses ...)  
 * Plug-ins: First come - first serve (example: commands like !link or !links)  
 
 The plugin system checks all **feature plugins** which match and concatenates them for the response. If you write some feature based-plugin register it with:   
@@ -47,7 +47,7 @@ class Plug_IN(plugin):
     pass
 
   def match():
-    return '^!greet'
+    return '^!greet($|\s)'
 
   def send_message(message,match,nick):
     return 'Hello ' + nick
@@ -58,6 +58,9 @@ class Plug_IN(plugin):
 register_plugin(Plug_IN)
 ````
 Put your py-file into the folder *pluginmanager/plugins*  
+Test
+---
+If you only want to test your plugin, just start **emu_xmpp.py**, it doesn't need SleekXMPP and you can test your nice plugin easily :)  
 Install
 ---
 * Install SleekXMPP and start muc.py with the following parameters:  

@@ -12,7 +12,7 @@ class Links(plugin):
         DatabaseLayer.init_db()
 
     def match():
-        return '^!links'
+        return '^!links($|\s)'
 
     def send_message(message,match,nick):
         msg = message.split(' ',1)
@@ -44,7 +44,7 @@ class Links(plugin):
         return response 
 
     def help():
-        return '!links - Show all stored links with message, time and nick. Commands:\nAll links from the following nicks: !links <nicks>, all links from a begin - till an end: !links <id begin> <id end>, all links from 1 till an end: !links <id end>' 
+        return '!links - Show all stored links with message, time and nick. Commands:\nAll links with the following nicks: !links <nicks>, all links from a begin - till an end: !links <id begin> <id end>, all links from 1 till an end: !links <id end>' 
 
 register_plugin(Links)
 
