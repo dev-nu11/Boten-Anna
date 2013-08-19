@@ -122,7 +122,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
         """
         # Help Command
         if is_private_message and re.search('^!help',message,re.IGNORECASE) != None:
-            msg = message.split(' ',1)
+            msg = message.rstrip().split(' ',1)
             if len(msg) < 2 or re.search('^help$',msg[1],re.IGNORECASE) !=None:
                 return '!help <plugin>'
 
@@ -169,7 +169,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                 except:
                     return 'Plugin error, something went wrong :('
 
-        return 'No Plugin found ...'
+        return 'No Plugin: %s found ...' %s
 
 if __name__ == '__main__':
     # Setup the command line arguments.
