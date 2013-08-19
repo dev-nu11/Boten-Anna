@@ -16,28 +16,35 @@ class Links(plugin):
 
     def send_message(message,match,nick):
         msg = message.split(' ',1)
+        
+        # Contains message a command like <nicks> or <link number(s)> ?
         if len(msg) > 1:
             msg = msg[1].split(' ')
+            # Nick or link-number?
             if msg[0].isdecimal():
-              if len(msg) > 1 and msg[1].isdecimal():
-                links = DatabaseLayer.get_links_in_range(msg[0],msg[1])
-              else:
-                links = DatabaseLayer.get_links_in_range(0,msg[0])
+                # Contains message a command with range like !links <begin> <end>?
+                if len(msg) > 1 and msg[1].isdecimal():
+                    links = DatabaseLayer.get_links_in_range(msg[0],msg[1])
+              # Command without Range? !links <end>
+                else:
+                    links = DatabaseLayer.get_links_in_range(0,msg[0])
+            # Command has only nick(s) 
             else:
-              links = DatabaseLayer.get_links_by_nick(msg)
+                links = DatabaseLayer.get_links_by_nick(msg)
         else:
             links = DatabaseLayer.get_links()
-
+        
+        # Format database dump to str: \n uid - url - title tag - message - nick - timestamp
         response  = ""
         for link in links:
             response += "\n"
             for column in link:
                 response += str(column) + " - "
-            response = response[:len(response)-3]
+            response = response[:len(response)-3] # without minus (-) at the end
         return response 
 
     def help():
-        return '!links - Show all stored links with message, time and nick' 
+        return '!links - Show all stored links with message, time and nick. Commands:\nAll links from the following nicks: !links <nicks>, all links from a begin - till an end: !links <id begin> <id end>, all links from 1 till an end: !links <id end>' 
 
 register_plugin(Links)
 
