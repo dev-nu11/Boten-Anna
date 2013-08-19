@@ -169,7 +169,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
                 except:
                     return 'Plugin error, something went wrong :('
 
-        return 'No Plugin: %s found ...' %s
+        return 'No Plugin "%s" found ...' % message
 
 if __name__ == '__main__':
     # Setup the command line arguments.

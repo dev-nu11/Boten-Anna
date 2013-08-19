@@ -62,7 +62,7 @@ def pluginhelp(message):
             except:
                 return 'Plugin error, something went wrong :('
 
-    return 'No Plugin found ...'  
+    return 'No Plugin "%s" found ...' % message 
 
 print("===== Plugin Tester ======")
 init_plugins()
