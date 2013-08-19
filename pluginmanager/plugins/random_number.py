@@ -17,7 +17,10 @@ class RandomNumber(plugin):
   def send_message(message,match,nick):
     msg = message.split(' ')[1:]
     if len(msg) == 2 and msg[0].isdecimal() and msg[1].isdecimal():
-      return str(random.randint(int(msg[0]), int(msg[1])))
+      try:
+        return str(random.randint(int(msg[0]), int(msg[1])))
+      except ValueError as v:
+        return 'Ouch %s that hurts, please try again with a valid number range' % nick
     else:
       return 'Usage:\n\t!random-number <range-begin> <range-end>'
 
