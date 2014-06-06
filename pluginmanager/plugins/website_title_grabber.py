@@ -1,7 +1,8 @@
 from pluginmanager.pluginmanager import register_plugin, plugin
 from databasemanager.boten_anna_db import boten_anna_db
-import re
+from bs4 import BeautifulSoup
 import urllib.request
+import magic
 
 class WebsiteTitleGrabber(plugin):
    
@@ -29,44 +30,47 @@ class WebsiteTitleGrabber(plugin):
         :return the page title
         '''
         is_duplicated, uid, stored_page_title, stored_message, stored_nick, timestamp = WebsiteTitleGrabber.check_duplicated(url)
-        if is_duplicated:
+        if is_duplicated and stored_nick:
             output = "(" + stored_page_title + ") " + nick + " du BOB! " + stored_nick + " hat das bereits am: " + timestamp
             if len(stored_message) > 0:
                 output += " mit der Nachricht: " + stored_message
             return output + " gepostet (!link "+str(uid)+")"
 
         try:
-            byte_content = urllib.request.urlopen(url)
-            content = byte_content.read()
-            content = WebsiteTitleGrabber.detect_decoding(content)
-            page_title = re.findall(r'<title>(.*?)</title>',content,re.DOTALL)
+            page = urllib.request.urlopen(url)
+            if not page:
+                raise Exception()
+
+            buf = page.read();
+            if not buf:
+                raise Exception()
+
+            soup = BeautifulSoup(buf)
+            if not soup:
+                raise Exception()
+
+            page_raw_title = soup.title
+
+            if not page_raw_title:
+                raise Exception()
+
+            page_title = page_raw_title.string
 
             if len(page_title) == 0:
-                page_title = ['Dieser Link besitzt kein title tag! :)']
+                page_title = ['Das leckere Sueppchen konnte kein <title>-Tag finden! :(']
 
-            page_title = ' '.join(page_title[0].split())
         except:
-            return "Die URL %s ist irgendwie komisch!" % url
+            if buf:
+                ms = magic.open(magic.MAGIC_NONE)
+                ms.load()
+                page_title = 'Das leckere Sueppchen konnte kein <title>-Tag finden, da *magic* *magic* der Link ein ' + ms.buffer(buf) + ' ist!'
+                ms.close()
+            else:
+                return "Die URL %s ist toootaaal komisch!" % url
     
         uid = WebsiteTitleGrabber.save_url(url,page_title,message,nick)
 
         return page_title + " (!link "+str(uid)+")"
-
-    def detect_decoding(content):
-        """
-        Try to find the right decoding :) ...
-        """
-        try:
-            return content.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-
-        try:
-            return content.decode("ISO-8859-15")
-        except UnicodeDecodeError:
-            pass
-
-        return str(content)
 
     def check_duplicated(url):
 

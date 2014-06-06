@@ -6,6 +6,7 @@ This is a simple XMPP MUC Bot especially written for thatsapp.org, but you can o
 Dependency
 ---
 * SleekXMPP (https://github.com/fritzy/SleekXMPP)
+* BeautifulSoup4 (https://pypi.python.org/pypi/beautifulsoup4) for the "website_title_grabber" feature-plugin
 
 Features
 ---
