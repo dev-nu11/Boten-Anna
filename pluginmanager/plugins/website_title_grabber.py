@@ -30,7 +30,7 @@ class WebsiteTitleGrabber(plugin):
         '''
         is_duplicated, uid, stored_page_title, stored_message, stored_nick, timestamp = WebsiteTitleGrabber.check_duplicated(url)
 
-        if is_duplicate:
+        if is_duplicated:
             if len(stored_nick) <= 0 or len(nick) <= 0:
                 return ""
             else:
