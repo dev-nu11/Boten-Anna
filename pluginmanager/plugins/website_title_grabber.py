@@ -29,11 +29,17 @@ class WebsiteTitleGrabber(plugin):
         :return the page title
         '''
         is_duplicated, uid, stored_page_title, stored_message, stored_nick, timestamp = WebsiteTitleGrabber.check_duplicated(url)
-        if is_duplicated and len(stored_nick) > 0:
-            output = "(" + stored_page_title + ") " + nick + " du BOB! " + stored_nick + " hat das bereits am: " + timestamp
-            if len(stored_message) > 0:
-                output += " mit der Nachricht: " + stored_message
-            return output + " gepostet (!link "+str(uid)+")"
+
+        if is_duplicate:
+            if len(stored_nick) <= 0 or len(nick) <= 0:
+                return ""
+            else:
+                output = "(" + stored_page_title + ") " + nick + " du BOB! " + stored_nick + " hat das bereits am: " + timestamp
+                
+                if len(stored_message) > 0:
+                    output += " mit der Nachricht: " + stored_message
+                
+                return output + " gepostet (!link "+str(uid)+")"
 
         try:
             page = urllib.request.urlopen(url)
