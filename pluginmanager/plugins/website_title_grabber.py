@@ -2,7 +2,6 @@ from pluginmanager.pluginmanager import register_plugin, plugin
 from databasemanager.boten_anna_db import boten_anna_db
 from bs4 import BeautifulSoup
 import urllib.request
-import magic
 
 class WebsiteTitleGrabber(plugin):
    
@@ -61,10 +60,7 @@ class WebsiteTitleGrabber(plugin):
 
         except:
             if buf:
-                ms = magic.open(magic.MAGIC_NONE)
-                ms.load()
-                page_title = 'Das leckere Sueppchen konnte kein <title>-Tag finden, da *magic* *magic* der Link ein ' + ms.buffer(buf) + ' ist!'
-                ms.close()
+                page_title = 'Das leckere Sueppchen konnte kein <title>-Tag finden, da es sich um keine HTML Seite handelt!'
             else:
                 return "Die URL %s ist toootaaal komisch!" % url
     

@@ -1,6 +1,5 @@
 abfuck
 aufregen
-bl[ö]+d
 b[o]+[a]+[h]+
 credit
 doof
@@ -11,7 +10,6 @@ fuck
 kack
 mist
 regt
-scheiß[e]?
 scp
 social
 w[u]+t
@@ -20,3 +18,4 @@ point
 points
 note
 leistung
+live-hacking
