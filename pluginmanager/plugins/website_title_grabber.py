@@ -2,6 +2,7 @@ from pluginmanager.pluginmanager import register_plugin, plugin
 from databasemanager.boten_anna_db import boten_anna_db
 from bs4 import BeautifulSoup
 import urllib.request
+import re
 
 class WebsiteTitleGrabber(plugin):
    
@@ -43,6 +44,15 @@ class WebsiteTitleGrabber(plugin):
 
         try:
             page = urllib.request.urlopen(url)
+
+            if not re.search('^text/html.*$',page.headers["Content-Type"],re.IGNORECASE):
+                raise Exception()
+
+            page_size = int (page.headers["Content-Length"])
+
+            if page_size and page_size > 500000:
+                raise Exception() 
+
             if not page:
                 raise Exception()
 
@@ -65,10 +75,7 @@ class WebsiteTitleGrabber(plugin):
                 page_title = ['Das leckere Sueppchen konnte kein <title>-Tag finden! :(']
 
         except:
-            if buf:
-                page_title = 'Das leckere Sueppchen konnte kein <title>-Tag finden, da es sich um keine HTML Seite handelt!'
-            else:
-                return "Die URL %s ist toootaaal komisch!" % url
+            page_title = 'Das leckere Sueppchen konnte kein <title>-Tag finden, da es sich um keine HTML Seite handelt!'
     
         uid = WebsiteTitleGrabber.save_url(url,page_title,message,nick)
 
