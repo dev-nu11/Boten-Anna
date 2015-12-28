@@ -45,6 +45,9 @@ class WebsiteTitleGrabber(plugin):
         try:
             page = urllib.request.urlopen(url)
 
+            if not page:
+                raise Exception()
+
             if not re.search('^text/html.*$',page.headers["Content-Type"],re.IGNORECASE):
                 raise Exception()
 
@@ -52,9 +55,6 @@ class WebsiteTitleGrabber(plugin):
 
             if page_size and page_size > 500000:
                 raise Exception() 
-
-            if not page:
-                raise Exception()
 
             buf = page.read();
             if not buf:
