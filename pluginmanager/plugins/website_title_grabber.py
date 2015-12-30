@@ -23,14 +23,14 @@ class WebsiteTitleGrabber(plugin):
         return WebsiteTitleGrabber.grabTitle(message_without_url, url, nick)
 
     def grabTitle(message_without_url, url, nick):
-        print("First check url for duplicate")
+        logging.warn("First check url for duplicate")
         result = WebsiteTitleGrabber.check_for_duplicate(url, nick)
-        print("Finished check url for duplicate")
+        logging.warn("Finished check url for duplicate")
         if result['is_duplicated']:
-            print("Is duplicate, inform user")
+            logging.warn("Is duplicate, inform user")
             return result['reply']
         try:
-            print("Open URL")
+            logging.warn("Open URL")
             page = urllib.request.urlopen(url)
 
             if not page:
