@@ -88,7 +88,7 @@ class MUCBot(sleekxmpp.ClientXMPP):
         '''
         Anna is listening to you
         '''
-        if msg['mucnick'] != self.nick and self.nick in msg['body']:
+        if msg['mucnick'] != self.nick:
             self.help_needed(msg)
             res = self.check_commands(msg)
             if res is False:
