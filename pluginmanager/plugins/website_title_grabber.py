@@ -41,7 +41,7 @@ class WebsiteTitleGrabber(plugin):
             return "Schäm dich du hast Anna weh getan. Der Link was auch immer das war, wurde nicht gespeichert."
 
         if not re.search('^text/html.*$',page.headers["Content-Type"],re.IGNORECASE):
-            page_title = "Cyber Cyber Cyber ... kein <title>-Tag, da %s. Ich speichere die URL trotzdem mal." % page.headers["Content-Type"]
+            page_title = "Cyber Cyber Cyber ... kein <title>-Tag, da der Content-Typ folgendem entspricht: %s. Ich speichere die URL trotzdem mal." % page.headers["Content-Type"]
 
             WebsiteTitleGrabber.db.save_url(url, page_title, message_without_url, nick)
             return page_title
