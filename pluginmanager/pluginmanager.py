@@ -21,7 +21,7 @@ class plugin(object):
     name = 'Plugin name'
 
     def plugin_init():
-	pass
+        pass
 
     def match():
         pass   
