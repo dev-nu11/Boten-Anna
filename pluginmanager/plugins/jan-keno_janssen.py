@@ -4,9 +4,6 @@ class JanKenoJanssen(plugin):
     
     name = 'Jan-Keno Janssen'
 
-    # 0: Match on Private Message | 1: Match on Group Chat
-    permissions = [True,True]
-  
     def plugin_init():
         JanKenoJanssen.wordlist = set() 
         for line in open('pluginmanager/plugins/jan-keno_janssen.txt', 'r'):
@@ -18,10 +15,10 @@ class JanKenoJanssen(plugin):
     def match():
         return JanKenoJanssen.words
 
-    def send_message(message,match,nick):
+    def send_message(message, match, nick):
         return "Jan-Keno Janssen regt das auf! - http://i.imgur.com/rO22R9u.png"
 
     def help():
         return "Write a Jan-Keno Janssen word like these " + ", ".join(JanKenoJanssen.wordlist)
 
-register_plugin(JanKenoJanssen)
+register_plugin(JanKenoJanssen, True)

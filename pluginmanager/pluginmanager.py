@@ -1,18 +1,18 @@
-plugins = set() 
-features = set()
+commands = set() 
+noises = set()
 
-def register_plugin(plugin,is_feature=False):
+def register_plugin(plugin, is_noise_plugin = False):
     """
     Registers a new plugin oder feature
     :param plugin plugin: plugin class to register / store
     :param bool is_feature: plugin or feature based?
     """
-    if is_feature:
-        global features
-        features.add(plugin)
+    if is_noise_plugin:
+        global noises 
+        noises.add(plugin)
     else:
-        global plugins
-        plugins.add(plugin) 
+        global commands
+        commands.add(plugin) 
 
 class plugin(object):
     """
@@ -20,16 +20,13 @@ class plugin(object):
     """
     name = 'Plugin name'
 
-    # 0: Match on private messages | 1: Match on groupchat
-    permissions = [True,True]  
-
     def plugin_init():
-        pass
+        print("This one")
 
     def match():
         pass   
 
-    def send_message(message,match,nick):
+    def send_message(message, match, nick):
         pass
 
     def help():

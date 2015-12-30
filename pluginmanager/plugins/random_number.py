@@ -5,9 +5,6 @@ class RandomNumber(plugin):
 
   name = 'Random number'
   
-  # 0: Match on Private Messages | 1: Match on Group Chat
-  permissions = [True,True]   
-
   def plugin_init():
     pass
 
