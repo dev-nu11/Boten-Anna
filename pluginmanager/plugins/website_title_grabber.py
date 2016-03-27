@@ -29,9 +29,14 @@ class WebsiteTitleGrabber(plugin):
         if result['is_duplicated']:
             logging.warn("Is duplicate, inform user")
             return result['reply']
+        req=urllib.request.Request(
+            url,
+            data=None,
+            headers={'User-Agent': "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
+        )
         try:
             logging.warn("Open URL")
-            page = urllib.request.urlopen(url)
+            page = urllib.request.urlopen(req)
 
             if not page:
                 raise Exception()
